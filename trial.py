@@ -19,8 +19,17 @@ def get_ip_details(ip=None, version="v4"):
     else:
         print(f"Error retrieving IP details for {version.upper()}.")
         return None
+    
 
 def display_ip_details(details):
+
+    """
+    Function for displaying selected information from the IP address details
+    obtained. Prints the selected details through print() functions. 
+
+    PARAMS: json() file
+    RETURN: N/A
+    """
     print("IP Address:", details.get("ip"))
     print("Version:", details.get("version"))
     print("Organization:", details.get("org"))  
