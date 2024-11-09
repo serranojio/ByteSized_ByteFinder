@@ -22,7 +22,6 @@ def get_ip_details(ip=None, version="v4"):
     
 
 def display_ip_details(details):
-
     """
     Function for displaying selected information from the IP address details
     obtained. Prints the selected details through print() functions. 
@@ -40,17 +39,20 @@ while True:
     choice = input("Do you want to get your current IP address details? (yes/no): ").strip().lower()
     
     if choice == "yes":
-        print("Retrieving IPv4 details...")
+        print("Retrieving IPv4 and IPv6 details...\n")
+        
         ipv4_details = get_ip_details(version="v4")
         if ipv4_details:
             print("Your IPv4 details:")
             display_ip_details(ipv4_details)
-
-        print("\nRetrieving IPv6 details...")
+            print("\n")
+        
         ipv6_details = get_ip_details(version="v6")
         if ipv6_details:
             print("Your IPv6 details:")
             display_ip_details(ipv6_details)
+            print("\n")
+    
     elif choice == "no":
         ip_input = input("Enter an IP address to retrieve its details (or 'exit' to quit): ").strip()
         if ip_input.lower() == "exit":
