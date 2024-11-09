@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, render_template, request
 import requests
 
+main_api = "https://geo.ipify.org/api/v2/country,city?apiKey=at_Fmv5F8IfCGpi5gYC5ZC0omAWxHfN1&ipAddress=8.8.8.8"
+
 app = Flask(__name__)
 
 def get_ip_info():
