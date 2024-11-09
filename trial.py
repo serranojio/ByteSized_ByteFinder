@@ -6,6 +6,12 @@ This contains code for the trials done (e.g., testing the fetching functionality
 """
 
 def get_ip_details(ip=None, version="v4"):
+    """
+    Getting the IP details function. This function uses the ipapi.co API
+    to obtain IP address details for:
+        a) user input
+        b) user current public IP
+    """
     url = f'https://ipapi.co/{ip}/json/' if ip else f'https://ipapi.co/{version}/json/'
     response = get(url)
     if response.status_code == 200:
