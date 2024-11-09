@@ -1,27 +1,38 @@
-from flask import Flask, jsonify, render_template, request
-import requests
+from requests import get
 
-main_api = "https://geo.ipify.org/api/v2/country,city?apiKey=at_Fmv5F8IfCGpi5gYC5ZC0omAWxHfN1&ipAddress=8.8.8.8"
+def get_ip_details(ip=None):
+    url = f'https://ipapi.co/{ip}/json/' if ip else 'https://ipapi.co/json/'
+    response = get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error retrieving IP details.")
+        return None
 
-app = Flask(__name__)
+def display_ip_details(details):
+    print("IP Address:", details.get("ip"))
+    print("Version:", details.get("version"))
+    print("Organization:", details.get("org"))  
+    print("Country Name:", details.get("country_name"))
+    print("Location (Latitude, Longitude):", f"{details.get('latitude')}, {details.get('longitude')}")
 
-def get_ip_info():
-    """Fetch public IPv4 and IPv6 information."""
-    ipv4 = requests.get("https://api64.ipify.org?format=json").json().get("ip")
-    ipv6 = requests.get("https://api64.ipify.org?format=json&ipv6=true").json().get("ip")
-    return {"ipv4": ipv4, "ipv6": ipv6}
-
-@app.route("/api/ip", methods=["GET"])
-def api_ip():
-    """API endpoint to retrieve IP information."""
-    ip_info = get_ip_info()
-    return jsonify(ip_info)
-
-@app.route("/")
-def home():
-    """Home route to display IP information."""
-    ip_info = get_ip_info()
-    return render_template("index.html", ip_info=ip_info)
-
-if __name__ == "_main_":
-    app.run(debug=True)
+while True:
+    choice = input("Do you want to get your current IP address details? (yes/no): ").strip().lower()
+    
+    if choice == "yes":
+        details = get_ip_details()
+        if details:
+            print("Your IP details:")
+            display_ip_details(details)
+    elif choice == "no":
+        ip_input = input("Enter an IP address to retrieve its details (or 'exit' to quit): ").strip()
+        if ip_input.lower() == "exit":
+            print("Exiting program.")
+            break
+        else:
+            details = get_ip_details(ip_input)
+            if details:
+                print(f"Details for IP {ip_input}:")
+                display_ip_details(details)
+    else:
+        print("Invalid input. Please enter 'yes' or 'no'.")
