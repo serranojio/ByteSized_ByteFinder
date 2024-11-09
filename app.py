@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template, request
 import requests
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 def get_ip_info():
     """Fetch public IPv4 and IPv6 information."""
@@ -21,5 +21,5 @@ def home():
     ip_info = get_ip_info()
     return render_template("index.html", ip_info=ip_info)
 
-if _name_ == "_main_":
+if __name__ == "_main_":
     app.run(debug=True)
