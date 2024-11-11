@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ByteFinder</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>ByteFinder</h1>
+    <div>
+        <label for="ip">Enter IP Address (optional):</label>
+        <input type="text" id="ip" placeholder="e.g., 8.8.8.8">
+        <label for="version">Select IP Version:</label>
+        <select id="version">
+            <option value="v4">IPv4</option>
+            <option value="v6">IPv6</option>
+        </select>
+        <button onclick="fetchIpDetails()">Get IP Details</button>
+    </div>
+    <div id="results"></div>
+
+    <script>
+        async function fetchIpDetails() {
+            const ip = document.getElementById("ip").value;
+            const version = document.getElementById("version").value;
+
+            const response = await fetch("/get_ip_details", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ ip, version })
+            });
+            const data = await response.json();
+
+            // Display results
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = data.error ? `<p>${data.error}</p>` : `
+                <p><strong>IP Address:</strong> ${data.ip}</p>
+                <p><strong>Version:</strong> ${data.version}</p>
+                <p><strong>Organization:</strong> ${data.org}</p>
+                <p><strong>Country Name:</strong> ${data.country_name}</p>
+                <p><strong>Location:</strong> ${data.latitude}, ${data.longitude}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
