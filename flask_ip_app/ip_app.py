@@ -26,7 +26,7 @@ def index():
 @app.route('/get_ip_details', methods=['POST'])
 def fetch_ip_details():
     data = request.json
-    ip = data.get("ip", None)
+    ip = data.get("ip", None).strip() if data.get("ip") else None 
     version = data.get("version", "v4")
     ip_details = get_ip_details(ip, version)
     return jsonify(ip_details)

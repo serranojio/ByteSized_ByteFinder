@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ByteFinder</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>IP Details Fetcher</title>
 </head>
 <body>
     <h1>ByteFinder</h1>
@@ -22,28 +21,47 @@
 
     <script>
         async function fetchIpDetails() {
-            const ip = document.getElementById("ip").value;
+            const ip = document.getElementById("ip").value.trim();
             const version = document.getElementById("version").value;
-
-            const response = await fetch("/get_ip_details", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ ip, version })
-            });
-            const data = await response.json();
-
-            // Display results
-            const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = data.error ? `<p>${data.error}</p>` : `
-                <p><strong>IP Address:</strong> ${data.ip}</p>
-                <p><strong>Version:</strong> ${data.version}</p>
-                <p><strong>Organization:</strong> ${data.org}</p>
-                <p><strong>Country Name:</strong> ${data.country_name}</p>
-                <p><strong>Location:</strong> ${data.latitude}, ${data.longitude}</p>
-            `;
+    
+            try {
+                const response = await fetch("/get_ip_details", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ ip: ip || "", version })
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+    
+                    // Debugging: Log the data to check the structure
+                    console.log("Response data:", data);
+    
+                    // Display results
+                    const resultsDiv = document.getElementById("results");
+                    if (data.error) {
+                        resultsDiv.innerHTML = `<p>${data.error}</p>`;
+                    } else {
+                        resultsDiv.innerHTML = `
+                            <p><strong>IP Address:</strong> ${data.ip || "N/A"}</p>
+                            <p><strong>Version:</strong> ${data.version || "N/A"}</p>
+                            <p><strong>Organization:</strong> ${data.org || "N/A"}</p>
+                            <p><strong>Country Name:</strong> ${data.country_name || "N/A"}</p>
+                            <p><strong>Location:</strong> ${data.latitude || "N/A"}, ${data.longitude || "N/A"}</p>
+                        `;
+                    }
+                } else {
+                    console.error("Server error:", response.status);
+                    document.getElementById("results").innerHTML = `<p>Server error: ${response.status}</p>`;
+                }
+            } catch (error) {
+                console.error("Error fetching IP details:", error);
+                document.getElementById("results").innerHTML = `<p>Could not fetch IP details. Please try again later.</p>`;
+            }
         }
     </script>
+    
 </body>
 </html>
