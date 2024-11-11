@@ -9,20 +9,23 @@ export default function App() {
 
   const fetchIpDetails = async () => {
     const selectedIp = ip || '';  // Use entered IP or default to public IP
-    const url = "https://ipapi.co/${selectedIp}/${version === 'v4' ? 'json' : 'json'}/";
-    
+    console.log(`Selected IP: ${selectedIp}`);
+    // const url = "https://ipapi.co/${selectedIp}/${version === 'v4' ? 'json' : 'json'}/";
+    const url = `https://api.ipgeolocation.io/ipgeo?apiKey=5da192667462410592d8883cb9a55ca9&ip=${selectedIp}`;
+    console.log(url);
     try {
       const response = await fetch(url);
       const data = await response.json();
+      console.log(data);
       
       if (data.error) {
         setIpDetails({ error: 'Could not retrieve IP details' });
       } else {
         setIpDetails({
           ip: data.ip,
-          org: data.org,
+          org: data.isp,
           country: data.country_name,
-          region: data.region,
+          region: data.state_prov,
           city: data.city,
           latitude: data.latitude,
           longitude: data.longitude
@@ -86,7 +89,7 @@ export default function App() {
           ) : (
             <>
               <Text style={styles.detailsText}>IP Address: {ipDetails.ip}</Text>
-              <Text style={styles.detailsText}>Organization: {ipDetails.org}</Text>
+              <Text style={styles.detailsText}>ISP: {ipDetails.org}</Text>
               <Text style={styles.detailsText}>Country: {ipDetails.country}</Text>
               <Text style={styles.detailsText}>Region: {ipDetails.region}</Text>
               <Text style={styles.detailsText}>City: {ipDetails.city}</Text>
@@ -178,6 +181,7 @@ const styles = StyleSheet.create({
     color: '#f9f9f9',
     fontSize: 16,
     marginBottom: 5,
+    fontWeight: '700',
   },
   errorText: {
     color: 'red',
