@@ -1,12 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Pressable } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { StyleSheet, Text, TextInput, View, Pressable, Image, Animated } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 export default function App() {
   const [ip, setIp] = useState('');
   const [version, setVersion] = useState('v4');
   const [ipDetails, setIpDetails] = useState(null);
+  const slideAnim = useRef(new Animated.Value(300)).current; 
 
   const fetchIpDetails = async () => {
     const selectedIp = ip || '';
@@ -31,6 +32,13 @@ export default function App() {
           longitude: data.longitude
         });
       }
+
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+
     } catch (error) {
       setIpDetails({ error: 'Error fetching IP details' });
     }
@@ -38,12 +46,13 @@ export default function App() {
 
   const clearResults = () => {
     setIpDetails(null);
-    setIp(''); 
+    setIp('');
+    slideAnim.setValue(300); 
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>ByteFinder</Text>
+      <Image source={require('./assets/ByteFinder - Presentation Draft (1).png')} style={styles.image} />
       
       <View style={styles.textInputContainer}>
         <TextInput
@@ -82,19 +91,18 @@ export default function App() {
       </Pressable>
 
       {ipDetails && (
-        <View style={styles.detailsContainer}>
+        <Animated.View style={[styles.detailsContainer, { transform: [{ translateY: slideAnim }] }]}>
           {ipDetails.error ? (
             <Text style={styles.errorText}>{ipDetails.error}</Text>
           ) : (
             <>
-              <Text style={styles.detailsText}>IP Address: {ipDetails.ip}</Text>
-              <Text style={styles.detailsText}>ISP: {ipDetails.org}</Text>
-              <Text style={styles.detailsText}>Country: {ipDetails.country}</Text>
-              <Text style={styles.detailsText}>Region: {ipDetails.region}</Text>
-              <Text style={styles.detailsText}>City: {ipDetails.city}</Text>
-              <Text style={styles.detailsText}>Location: {ipDetails.latitude}, {ipDetails.longitude}</Text>
+              <Text style={styles.detailsText}>IP Address: <Text style={styles.detailsValueText}> {ipDetails.ip} </Text></Text>
+              <Text style={styles.detailsText}>ISP: <Text style={styles.detailsValueText}> {ipDetails.org} </Text></Text>
+              <Text style={styles.detailsText}>Country: <Text style={styles.detailsValueText}> {ipDetails.country} </Text></Text>
+              <Text style={styles.detailsText}>Region: <Text style={styles.detailsValueText}> {ipDetails.region} </Text></Text>
+              <Text style={styles.detailsText}>City: <Text style={styles.detailsValueText}> {ipDetails.city} </Text></Text>
+              <Text style={styles.detailsText}>Location: <Text style={styles.detailsValueText}> {ipDetails.latitude}, {ipDetails.longitude} </Text></Text>
               
-              {/* Map View */}
               <MapView
                 style={styles.map}
                 initialRegion={{
@@ -115,7 +123,7 @@ export default function App() {
               </MapView>
             </>
           )}
-        </View>
+        </Animated.View>
       )}
 
       {ipDetails && (
@@ -146,6 +154,13 @@ const styles = StyleSheet.create({
   textInputContainer: {
     width: '100%',
     marginBottom: 15,
+  },
+  image: {
+    height: "35%",
+    width: undefined,
+    aspectRatio: 1,
+    resizeMode: 'contain',
+    margin: -80,
   },
   input: {
     borderWidth: 1,
@@ -192,15 +207,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   detailsContainer: {
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginTop: 20,
     width: '100%',
+    justifyContent: 'center',
+    borderWidth: 1, 
+    borderColor: '#f9f9f9',
+    padding: 20,
+    borderRadius: 11,  
   },
   detailsText: {
     color: '#f9f9f9',
     fontSize: 16,
     marginBottom: 5,
     fontWeight: '700',
+  },
+
+  detailsValueText: {
+    color: '#f9f9f9',
+    fontSize: 16,
+    marginBottom: 5,
+    fontWeight: '400',
   },
   errorText: {
     color: 'red',
@@ -222,5 +249,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     marginTop: 20,
+    borderRadius: 8, 
   },
 });
