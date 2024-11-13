@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Pressable } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
 export default function App() {
   const [ip, setIp] = useState('');
@@ -8,10 +9,9 @@ export default function App() {
   const [ipDetails, setIpDetails] = useState(null);
 
   const fetchIpDetails = async () => {
-    const selectedIp = ip || '';  // Use entered IP or default to public IP
+    const selectedIp = ip || '';
     console.log(`Selected IP: ${selectedIp}`);
-    // const url = "https://ipapi.co/${selectedIp}/${version === 'v4' ? 'json' : 'json'}/";
-    const url = `https://api.ipgeolocation.io/ipgeo?apiKey=5da192667462410592d8883cb9a55ca9&ip=${selectedIp}`;
+    const url = `https://ipapi.co/${selectedIp}/${version === 'v4' ? 'json' : 'json'}/`;
     console.log(url);
     try {
       const response = await fetch(url);
@@ -23,9 +23,9 @@ export default function App() {
       } else {
         setIpDetails({
           ip: data.ip,
-          org: data.isp,
+          org: data.org,
           country: data.country_name,
-          region: data.state_prov,
+          region: data.region,
           city: data.city,
           latitude: data.latitude,
           longitude: data.longitude
@@ -35,7 +35,6 @@ export default function App() {
       setIpDetails({ error: 'Error fetching IP details' });
     }
   };
-  
 
   const clearResults = () => {
     setIpDetails(null);
@@ -94,12 +93,31 @@ export default function App() {
               <Text style={styles.detailsText}>Region: {ipDetails.region}</Text>
               <Text style={styles.detailsText}>City: {ipDetails.city}</Text>
               <Text style={styles.detailsText}>Location: {ipDetails.latitude}, {ipDetails.longitude}</Text>
+              
+              {/* Map View */}
+              <MapView
+                style={styles.map}
+                initialRegion={{
+                  latitude: ipDetails.latitude,
+                  longitude: ipDetails.longitude,
+                  latitudeDelta: 0.05,
+                  longitudeDelta: 0.05,
+                }}
+              >
+                <Marker
+                  coordinate={{
+                    latitude: ipDetails.latitude,
+                    longitude: ipDetails.longitude
+                  }}
+                  title={ipDetails.city}
+                  description={`${ipDetails.region}, ${ipDetails.country}`}
+                />
+              </MapView>
             </>
           )}
         </View>
       )}
 
-      {/* Clear Results Button */}
       {ipDetails && (
         <Pressable style={styles.clearButton} onPress={clearResults}>
           <Text style={styles.clearButtonText}>Clear Results</Text>
@@ -176,6 +194,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     alignItems: 'flex-start',
     marginTop: 20,
+    width: '100%',
   },
   detailsText: {
     color: '#f9f9f9',
@@ -198,5 +217,10 @@ const styles = StyleSheet.create({
     color: '#f9f9f9',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  map: {
+    width: '100%',
+    height: 200,
+    marginTop: 20,
   },
 });
