@@ -17,7 +17,6 @@ export default function App() {
     try {
       const response = await fetch(url);
       const data = await response.json();
-      console.log(data);
       
       if (data.error) {
         setIpDetails({ error: 'Could not retrieve IP details' });
